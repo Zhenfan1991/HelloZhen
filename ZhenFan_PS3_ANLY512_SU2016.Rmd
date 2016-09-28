@@ -1,0 +1,75 @@
+---
+title: "Problem Set3"
+author: "Zhen"
+date: "September 29, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+## Objectives
+
+The objectives of this problem set is to gain experience working with data visualization as a tool for understanding unfamiliar data. To do this I want you to submit four *vis* that reveal something interesting about either the included `movies.csv` dataset.  For each *vis*, include the code you used to create the plot (`echo=TRUE`), and a one paragraph description of what you found interesting.  In most analyses the first plot you try will not be the most informative and you will need to make multiple improvements to get a polished plot. To show this process, for one of your 4 *vis*, provide 3-5 iterations that lead you to the final plot.  
+
+Finally, upon completion name your final `.Rmd` file as: `YourName_PS2_ANLY512_SU2016.Rmd` and upload the link to the file from your GitHub repository to the "Problem Set 2"" assignmenet on Moodle.
+
+### Data Import & Cleanup
+```{r, echo=TRUE}
+library(dplyr)  # for easier filtering
+library(ggplot2)
+
+dat <- read.csv("C:/Users/Zhen/Downloads/movie_data.csv")  # import the csv
+
+str(dat)    # Look at the structure of the data frame
+head(dat)
+
+# Clean up some variables
+dat$Domestic <- as.numeric(dat$Domestic)   # Convert these columns to numeric
+dat$Worldwide <- as.numeric(dat$Worldwide)
+
+# dat2 <- filter(dat, Title.type == "Feature Film")
+```
+
+
+### Multi-step Visualization
+
+Look at the distribution of earnines vs. Ratings.
+```{r, echo=TRUE}
+ggplot(dat, aes(AVG.rating, Worldwide, colour = Year)) +
+  geom_point()
+```
+
+__It seems there is no significant correlation between earnings and ratings. But it seems there is positive correlation between year and earnings. In the next step we will try to prove the relationship__
+
+Look at the relationship of earnings and year.
+```{r, echo=TRUE}
+ggplot(dat, aes(Year, Worldwide)) +
+  geom_bar(stat = "identity")
+```
+
+__Movies made around 2000-2010 get the highest earnings. The reason why the earnings is lower after 2010 is probably due to lack of data.__
+
+Look at how many movies each year in the data
+```{r, echo=TRUE}
+library(dplyr)
+ggplot(dat, aes(Year, id)) +
+  geom_point()
+```
+
+__We can see there are very few points after 2010.__
+
+Look at the earnings vs Year before 2010 and after 1980
+```{r, echo=TRUE}
+dat2 <- filter(dat, Year <= 2010 , Year >= 1980)
+ggplot(dat2, aes(Year, Worldwide)) +
+  geom_point() + geom_smooth()+
+ggtitle("Earnings per Year") +
+  ylab("Worldwide Earnings (USD)") +
+  xlab("Year")
+```
+
+__From the chart we can see from 1980 to 2010 there is no significant relationship between Year and Worldwide earning__
+
